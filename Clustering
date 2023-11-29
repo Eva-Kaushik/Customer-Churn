@@ -1,0 +1,68 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+
+# Load your dataset from an Excel file or CSV (replace 'your_data.csv' with your file path)
+data = pd.read_excel(r'C:\Users\ekaushik\OneDrive - DXC Production\Desktop\generated_data.xlsx')
+
+#Features for K-means clustering
+features = ['Max_Credit_Limit_y', 'Payment_to_Income_Ratio', 'Credit_Utilization_Rate_y']
+
+# Specify the number of clusters
+k = 9
+
+# Performing K-means clustering and add cluster labels to the DataFrame
+kmeans = KMeans(n_clusters=k, random_state=0)
+data['cluster_labels'] = kmeans.fit_predict(data[features])
+
+# Define a function to categorize clusters and create plots for each category
+def categorize_and_plot_clusters(cluster_data, cluster_label_column):
+    # Creating a dictionary to store cluster categories
+    cluster_categories = {
+        'High-Risk Churn Clusters': [],
+        'Moderate-Risk Churn Clusters': [],
+        'Low-Risk Churn Clusters': []
+    }
+
+    # Loop through each cluster
+    for cluster_number in range(cluster_data[cluster_label_column].nunique()):
+        cluster = cluster_data[cluster_data[cluster_label_column] == cluster_number]
+
+        # Defining conditions based on dataset
+        max_credit_limit_condition = cluster['Max_Credit_Limit_y'].max() > 10000
+        payments_condition = cluster['Payment_to_Income_Ratio'].mean() > 3
+        high_credit_utilization_condition = cluster['Credit_Utilization_Rate_y'].mean() > 0.8
+
+        # Categorizing clusters based on defined conditions
+        if (max_credit_limit_condition and
+            payments_condition and
+            high_credit_utilization_condition):
+            category = 'High-Risk Churn Clusters'
+        else:
+            category = 'Low-Risk Churn Clusters'
+
+        cluster_categories[category].append(cluster)
+
+    # Create and save plots for each category
+    for category, clusters in cluster_categories.items():
+        plt.figure(figsize=(10, 6))
+        plt.title(category)
+        
+        
+        for cluster in clusters:
+            sns.histplot(cluster['Max_Credit_Limit_y'], bins=20, kde=True, label=f'Cluster {cluster["cluster_labels"].iloc[0]}')
+        
+        plt.legend()
+        plt.xlabel('Values')
+        plt.ylabel('Frequency')
+        
+        # Save the plot to a file 
+        plt.savefig(f'{category}_plot.png')
+        
+        
+        plt.show()
+
+# Calling the function to categorize and plot clusters
+categorize_and_plot_clusters(data, 'cluster_labels')
+
