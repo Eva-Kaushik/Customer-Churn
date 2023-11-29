@@ -1,6 +1,6 @@
 # Customer-Churn
-####Churn Prediction and Customer Segmentation Readme
-##Overview
+Churn Prediction and Customer Segmentation Readme
+Overview
 This repository contains code and documentation for a Churn Prediction and Customer Segmentation system. The system utilizes machine learning models, specifically the XGBoost algorithm, to identify potential churn risks and categorize customers into different clusters based on their behavior patterns. The aim is to provide actionable insights for customer retention strategies.
 
 Churn_Prediction_Segmentation_Documentation.pdf: Detailed documentation explaining the system architecture, model training, and interpretation of results.
