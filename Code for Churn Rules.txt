@@ -1,0 +1,119 @@
+import pandas as pd
+import random
+
+# Number of samples
+N = 5000  # You can adjust this
+
+data = []
+
+for _ in range(N):
+    main_cluster = random.choice(['High-Risk', 'Moderate-Risk', 'Low-Risk'])
+    record = {'Risk_Level': main_cluster}
+    
+    if main_cluster == 'High-Risk':
+        sub_cluster = random.choice(['Over-Utilizers', 'Inactive Users', 'Complaint-heavy Users'])
+        record['Cluster'] = sub_cluster
+
+        # Criteria for Over-Utilizers
+        if sub_cluster == 'Over-Utilizers':
+            criteria = random.choice(['High Credit Utilization', 'Recurrent Late Fee', 'High Installment Usage'])
+            record['Criteria'] = criteria
+            if criteria == 'High Credit Utilization':
+                record['Credit_Utilization_Rate'] = random.uniform(0.7, 1)
+                record['Payment_Timeliness'] = 'Late'
+            elif criteria == 'Recurrent Late Fee':
+                record['Payment_Timeliness'] = 'Late'
+                record['Outstanding_Debt'] = random.uniform(1000, 10000)
+            elif criteria == 'High Installment Usage':
+                record['Installment_Plan'] = random.choice(['Frequently', 'Rarely'])
+                record['Outstanding_Debt'] = random.uniform(1000, 10000)
+        
+        # Criteria for Inactive Users
+        elif sub_cluster == 'Inactive Users':
+            criteria = random.choice(['Inactive Online', 'New Users', 'Inactive High Fees'])
+            record['Criteria'] = criteria
+            if criteria == 'Inactive Online':
+                record['Days_Since_Last_Login'] = random.randint(30, 365)
+                record['Open_Email_Rate'] = random.uniform(0, 0.2)
+            elif criteria == 'New Users':
+                record['Customer_Acquisition_Date'] = pd.Timestamp.now() - pd.Timedelta(days=random.randint(0, 30))
+                record['Interaction_ID_Count'] = random.randint(0, 5)
+            elif criteria == 'Inactive High Fees':
+                record['Days_Since_Last_Transaction'] = random.randint(30, 365)
+                record['Annual_Fee'] = random.uniform(100, 500)
+        
+        # Criteria for Complaint-heavy Users
+        elif sub_cluster == 'Complaint-heavy Users':
+            criteria = random.choice(['High Complaints', 'Low Digital Engagement'])
+            record['Criteria'] = criteria
+            if criteria == 'High Complaints':
+                record['Num_Complaints'] = random.randint(5, 50)
+                record['Resolution_Status'] = random.choice(['Pending', 'Escalated'])
+            elif criteria == 'Low Digital Engagement':
+                record['Open_Email_Rate'] = random.uniform(0, 0.2)
+                record['Days_Since_Last_Login'] = random.randint(30, 365)
+                record['Num_Complaints'] = random.randint(5, 50)
+                
+		elif main_cluster == 'Moderate-Risk':
+        sub_cluster = random.choice(['Sporadic Users', 'High Balancers', 'New Users with Low Engagement'])
+        record['Cluster'] = sub_cluster
+
+        # Criteria for Sporadic Users
+        if sub_cluster == 'Sporadic Users':
+            criteria = random.choice(['Usage on Weekends/Holidays', 'Promo Engagement without Transactions'])
+            record['Criteria'] = criteria
+            if criteria == 'Usage on Weekends/Holidays':
+                record['Weekend_vs_Weekday_Spending'] = random.uniform(0.7, 1)
+                record['Holiday_Spending'] = random.uniform(0.7, 1)
+            elif criteria == 'Promo Engagement without Transactions':
+                record['Promo_Code_Usage'] = random.choice(['Frequently', 'Rarely'])
+                record['Transaction_Amount'] = random.uniform(0, 50)
+                record['Transaction_Frequency'] = random.uniform(0, 0.2)
+
+        # Criteria for High Balancers
+        elif sub_cluster == 'High Balancers':
+            criteria = random.choice(['High Balance, Minimum Payments', 'High Balance, Low Reward Points'])
+            record['Criteria'] = criteria
+            if criteria == 'High Balance, Minimum Payments':
+                record['Current_Balance'] = random.uniform(1000, 10000)
+                record['Payment_Timeliness'] = random.choice(['Late', 'Very Late'])
+                record['Min_Payment'] = random.uniform(0, 100)
+            elif criteria == 'High Balance, Low Reward Points':
+                record['Current_Balance'] = random.uniform(1000, 10000)
+                record['Reward_Points_Earned'] = random.uniform(0, 20)
+
+        # Criteria for New Users with Low Engagement
+        elif sub_cluster == 'New Users with Low Engagement':
+            record['Sentiment_Score'] = random.uniform(-1, 0) # Negative sentiment score
+            record['Interaction_ID_Count'] = random.randint(5, 50)
+            record['Resolution_Status'] = random.choice(['Pending', 'Escalated'])
+    
+		elif main_cluster == 'Low-Risk':
+			sub_cluster = random.choice(['Loyal Users', 'Financially Conscious Users', 'Reward Maximisers'])
+			record['Cluster'] = sub_cluster
+
+        # Criteria for Loyal Users
+        if sub_cluster == 'Loyal Users':
+            criteria = random.choice(['High Transaction, Low Reward Redemption', 'Infrequent Usage, High Credit Limit'])
+            record['Criteria'] = criteria
+            if criteria == 'High Transaction, Low Reward Redemption':
+                record['Transaction_Amount'] = random.uniform(100, 1000)
+                record['Reward_Points_Redeemed'] = random.uniform(0, 20)
+            elif criteria == 'Infrequent Usage, High Credit Limit':
+                record['Transaction_Frequency'] = random.uniform(0, 0.2)
+                record['Max_Credit_Limit'] = random.uniform(1000, 10000)
+
+        # Criteria for Financially Conscious Users
+        elif sub_cluster == 'Financially Conscious Users':
+            record['Communication_Preference_Updates'] = random.randint(5, 50)
+
+        # Criteria for Reward Maximisers
+        elif sub_cluster == 'Reward Maximisers':
+            record['Transaction_Amount_Sales_Period'] = random.uniform(100, 1000)
+            record['Promo_Code_Usage'] = 'None'
+            record['Discount_Applied'] = random.uniform(0, 0.2)
+			
+    data.append(record)
+
+df = pd.DataFrame(data)
+df.to_csv('risk_clusters.csv', index=False)
